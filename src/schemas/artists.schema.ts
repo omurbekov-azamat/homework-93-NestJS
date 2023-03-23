@@ -4,7 +4,7 @@ export type ArtistDocument = Artist & Document;
 
 @Schema()
 export class Artist {
-  @Prop({ type: String, required: true })
+  @Prop({ required: true })
   name: string;
   @Prop()
   information: string;
