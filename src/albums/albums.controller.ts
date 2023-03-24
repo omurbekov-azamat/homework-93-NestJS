@@ -15,11 +15,13 @@ import { Album, AlbumDocument } from '../schemas/albums.schema';
 import { Model } from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateAlbumDto } from './create-album.dto';
+import { Track, TrackDocument } from '../schemas/tracks.schema';
 
 @Controller('albums')
 export class AlbumsController {
   constructor(
     @InjectModel(Album.name) private albumModel: Model<AlbumDocument>,
+    @InjectModel(Track.name) private trackModel: Model<TrackDocument>,
   ) {}
 
   @Post()
@@ -36,7 +38,6 @@ export class AlbumsController {
       releaseDate: albumDto.releaseDate,
       image: file ? '/uploads/albums/' + file.filename : null,
     });
-
     return album.save();
   }
 
@@ -47,17 +48,18 @@ export class AlbumsController {
         .find({ artist: query.artist })
         .populate('artist');
 
-      if (!albumsByArtist) throw new NotFoundException('Album is not found!');
+      if (albumsByArtist.length === 0)
+        throw new NotFoundException('Albums by artist are not found!');
 
       return albumsByArtist;
-    } else {
-      const albums = await this.albumModel.find();
-
-      if (albums.length === 0)
-        throw new NotFoundException('Album is not found!');
-
-      return albums;
     }
+
+    const albums = await this.albumModel.find();
+
+    if (albums.length === 0)
+      throw new NotFoundException('Albums are not found!');
+
+    return albums;
   }
 
   @Get(':id')
@@ -75,8 +77,13 @@ export class AlbumsController {
 
     if (!album) throw new NotFoundException('Album is not found!');
 
-    await this.albumModel.deleteOne(album._id);
+    const tracks = await this.trackModel.find({ album: album._id });
 
-    return { message: 'Delete was successfully' };
+    if (tracks.length === 0) {
+      await this.albumModel.deleteOne(album._id);
+      return { message: 'Delete was successfully' };
+    }
+
+    return { message: 'You can not delete, album has tracks ' };
   }
 }
