@@ -8,6 +8,8 @@ import { AlbumsController } from './albums/albums.controller';
 import { Album, AlbumSchema } from './schemas/albums.schema';
 import { TracksController } from './tracks/tracks.controller';
 import { Track, TrackSchema } from './schemas/tracks.schema';
+import { UsersController } from './users/users.controller';
+import { User, UserSchema } from './schemas/users.schema';
 
 @Module({
   imports: [
@@ -16,6 +18,7 @@ import { Track, TrackSchema } from './schemas/tracks.schema';
       { name: Artist.name, schema: AristSchema },
       { name: Album.name, schema: AlbumSchema },
       { name: Track.name, schema: TrackSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [
@@ -23,6 +26,7 @@ import { Track, TrackSchema } from './schemas/tracks.schema';
     ArtistsController,
     AlbumsController,
     TracksController,
+    UsersController,
   ],
   providers: [AppService],
 })
