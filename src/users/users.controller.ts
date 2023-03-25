@@ -3,6 +3,7 @@ import {
   Post,
   Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,6 +11,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/users.schema';
 import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -36,5 +38,11 @@ export class UsersController {
     user.generateToken();
 
     return user.save();
+  }
+
+  @UseGuards(AuthGuard('local'))
+  @Post('sessions')
+  async login(@Req() req: Request) {
+    return req.user as UserDocument;
   }
 }
