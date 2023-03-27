@@ -24,6 +24,7 @@ export class TracksController {
   ) {}
 
   @Post()
+  @UseGuards(TokenAuthGuard)
   async createTrack(@Body() trackData: CreateTrackDto) {
     const track = new this.trackModel({
       album: trackData.album,

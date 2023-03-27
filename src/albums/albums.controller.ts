@@ -28,6 +28,7 @@ export class AlbumsController {
   ) {}
 
   @Post()
+  @UseGuards(TokenAuthGuard)
   @UseInterceptors(
     FileInterceptor('image', { dest: './public/uploads/albums' }),
   )

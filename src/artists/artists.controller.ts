@@ -29,6 +29,7 @@ export class ArtistsController {
   ) {}
 
   @Post()
+  @UseGuards(TokenAuthGuard)
   @UseInterceptors(
     FileInterceptor('image', { dest: './public/uploads/artists' }),
   )
