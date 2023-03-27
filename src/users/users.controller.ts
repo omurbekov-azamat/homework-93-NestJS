@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Post,
   Req,
   UploadedFile,
@@ -32,6 +33,7 @@ export class UsersController {
       username: req.body.username,
       password: req.body.password,
       displayName: req.body.displayName,
+      role: req.body.role ? req.body.role : 'user',
       avatar: file ? '/uploads/avatars/' + file.filename : null,
     });
 
@@ -43,6 +45,31 @@ export class UsersController {
   @UseGuards(AuthGuard('local'))
   @Post('sessions')
   async login(@Req() req: Request) {
-    return req.user as UserDocument;
+    const user = req.user as UserDocument;
+
+    return {
+      message: 'Username and password correct',
+      user,
+    };
+  }
+
+  @Delete('sessions')
+  async logout(@Req() req: Request) {
+    const token = req.get('Authorization');
+    const success = { message: 'OK' };
+
+    if (!token) {
+      return success;
+    }
+
+    const user = await this.userModel.findOne({ token });
+
+    if (!user) {
+      return success;
+    }
+
+    user.generateToken();
+    await user.save();
+    return success;
   }
 }
