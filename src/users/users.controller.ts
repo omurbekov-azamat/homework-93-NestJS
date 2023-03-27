@@ -42,8 +42,8 @@ export class UsersController {
     return user.save();
   }
 
-  @UseGuards(AuthGuard('local'))
   @Post('sessions')
+  @UseGuards(AuthGuard('local'))
   async login(@Req() req: Request) {
     const user = req.user as UserDocument;
 
